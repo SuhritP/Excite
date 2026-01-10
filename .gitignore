@@ -1,0 +1,41 @@
+# Data files - do not commit large datasets
+GazeBase_v2_0/
+*.csv
+*.mat
+*.npy
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Model artifacts
+*.h5
+*.pkl
+*.pth
+*.onnx
+models/checkpoints/
+
+# Logs
+logs/
+*.log
