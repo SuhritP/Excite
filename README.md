@@ -39,22 +39,22 @@ Traditional ADHD diagnosis relies on subjective behavioral assessments and lengt
 ## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                         EXCITE Pipeline                          │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   📷 Camera          🔍 CV Model           🧠 ML Model           │
-│   ─────────  ───▶   ─────────────  ───▶   ───────────  ───▶  📊 │
-│   Eye Video         Gaze Extraction       ADHD Detection    Results│
-│                     (eyetrack.py)         (inference.py)          │
-│                                                                  │
-│   Extracts:                 Analyzes:                            │
-│   • Pupil position          • Saccade velocity                   │
-│   • Pupil diameter          • Fixation stability                 │
-│   • Gaze coordinates        • Gaze entropy                       │
-│   • Validity flags          • Temporal patterns                  │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
++------------------------------------------------------------------+
+|                         EXCITE Pipeline                          |
++------------------------------------------------------------------+
+|                                                                  |
+|   Camera           CV Model            ML Model                  |
+|   --------  --->   -----------  --->   -----------  --->  Result |
+|   Eye Video        Gaze Extraction     ADHD Detection            |
+|                    (eyetrack.py)       (inference.py)            |
+|                                                                  |
+|   Extracts:                 Analyzes:                            |
+|   - Pupil position          - Saccade velocity                   |
+|   - Pupil diameter          - Fixation stability                 |
+|   - Gaze coordinates        - Gaze entropy                       |
+|   - Validity flags          - Temporal patterns                  |
+|                                                                  |
++------------------------------------------------------------------+
 ```
 
 ## 📁 Project Structure
@@ -235,12 +235,6 @@ This software is for research and educational purposes. Always consult qualified
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) for details.
-
-## 🙏 Acknowledgments
-
-- GazeBase dataset contributors
-- ADHD eye-tracking research community
-- PyTorch team
 
 ---
 
