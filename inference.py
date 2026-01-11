@@ -43,7 +43,7 @@ class ADHDModel(nn.Module):
 class ADHDDetector:
     """ADHD detector using trained ML model."""
     
-    def __init__(self, model_path: str = "checkpoints/adhd_model.pt", seq_len: int = 500, fps: int = 30):
+    def __init__(self, model_path: str = "checkpoints/adhd_model.pt", seq_len: int = 200, fps: int = 30):
         self.seq_len = seq_len
         self.fps = fps
         self.buffer = []
@@ -96,6 +96,11 @@ class ADHDDetector:
     def _predict(self) -> dict:
         """Run prediction using trained ML model."""
         seq = np.array(self.buffer[-self.seq_len:], dtype=np.float32)
+        
+        # Pad to 500 if needed (model expects 500)
+        if len(seq) < 500:
+            pad_len = 500 - len(seq)
+            seq = np.pad(seq, ((0, pad_len), (0, 0)), mode='edge')
         
         x, y, pupil = seq[:, 0], seq[:, 1], seq[:, 2]
         

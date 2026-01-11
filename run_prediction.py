@@ -42,12 +42,16 @@ def load_cv_output(filepath: str) -> pd.DataFrame:
     else:
         raise ValueError(f"Unsupported format: {path.suffix}. Use .csv or .json")
     
-    # Normalize column names (handle variations)
+    # Normalize column names (handle variations including CV model output)
     col_map = {
         'gaze_x': 'x', 'gazeX': 'x', 'GazeX': 'x', 'X': 'x',
+        'theta_x_deg': 'x',  # CV model output
         'gaze_y': 'y', 'gazeY': 'y', 'GazeY': 'y', 'Y': 'y',
+        'theta_y_deg': 'y',  # CV model output
         'pupil': 'dP', 'pupil_diameter': 'dP', 'PupilDiameter': 'dP', 'diameter': 'dP',
+        'pupil_diameter_px': 'dP',  # CV model output
         'valid': 'val', 'validity': 'val', 'Validity': 'val',
+        'validity_id': 'val',  # CV model output
         'target_x': 'xT', 'targetX': 'xT', 'TargetX': 'xT',
         'target_y': 'yT', 'targetY': 'yT', 'TargetY': 'yT',
     }
