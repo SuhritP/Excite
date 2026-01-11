@@ -235,9 +235,3 @@ This software is for research and educational purposes. Always consult qualified
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-<p align="center">
-  Built with ❤️ for the future of cognitive diagnostics
-</p>
