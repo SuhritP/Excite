@@ -274,6 +274,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         }
 
         /* Neural Eye Animation */
+        /* Neural Network to Eye Transformation */
         .neural-eye-container {
             position: relative;
             width: 100%;
@@ -283,158 +284,329 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             justify-content: center;
         }
 
-        .neural-eye {
+        .neural-eye-wrapper {
             position: relative;
-            width: 400px;
-            height: 400px;
+            width: 450px;
+            height: 450px;
         }
 
-        .eye-outer {
+        /* Canvas for neural network animation */
+        #neuralCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Eye layers that fade in */
+        .eye-structure {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        /* Outer eye shape - almond/lens shape */
+        .eye-lens {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 320px;
+            height: 160px;
+            border: 2px solid rgba(129, 140, 248, 0.4);
+            border-radius: 100% 0 100% 0;
+            transform: translate(-50%, -50%) rotate(0deg);
+            animation: eye-lens-rotate 25s linear infinite;
+            opacity: 0;
+            animation: eye-lens-appear 1s ease-out 2s forwards, eye-lens-glow 4s ease-in-out infinite 3s;
+        }
+
+        @keyframes eye-lens-appear {
+            to { opacity: 1; }
+        }
+
+        @keyframes eye-lens-glow {
+            0%, 100% { 
+                box-shadow: 0 0 30px rgba(129, 140, 248, 0.2), inset 0 0 30px rgba(129, 140, 248, 0.1);
+                border-color: rgba(129, 140, 248, 0.4);
+            }
+            50% { 
+                box-shadow: 0 0 50px rgba(129, 140, 248, 0.4), inset 0 0 40px rgba(129, 140, 248, 0.2);
+                border-color: rgba(129, 140, 248, 0.6);
+            }
+        }
+
+        /* Rotating rings */
+        .eye-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border-radius: 50%;
+            border: 1.5px solid;
+            opacity: 0;
+        }
+
+        .eye-ring-1 {
+            width: 200px;
+            height: 200px;
+            border-color: rgba(129, 140, 248, 0.3);
+            animation: ring-appear 0.8s ease-out 1.5s forwards, rotate-ring 20s linear infinite 2.3s;
+        }
+
+        .eye-ring-2 {
+            width: 160px;
+            height: 160px;
+            border-color: rgba(192, 132, 252, 0.4);
+            animation: ring-appear 0.8s ease-out 1.8s forwards, rotate-ring 15s linear infinite reverse 2.6s;
+        }
+
+        .eye-ring-3 {
+            width: 240px;
+            height: 240px;
+            border-color: rgba(34, 211, 238, 0.2);
+            animation: ring-appear 0.8s ease-out 2s forwards, rotate-ring 30s linear infinite 2.8s;
+        }
+
+        @keyframes ring-appear {
+            from { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            to { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes rotate-ring {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Ring dots */
+        .ring-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--accent-primary);
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .eye-ring-2 .ring-dot {
+            background: var(--accent-secondary);
+            box-shadow: 0 0 15px var(--accent-secondary);
+            width: 8px;
+            height: 8px;
+            top: -4px;
+        }
+
+        .eye-ring-3 .ring-dot {
+            background: var(--accent-tertiary);
+            box-shadow: 0 0 15px var(--accent-tertiary);
+            width: 6px;
+            height: 6px;
+            top: -3px;
+        }
+
+        /* Iris */
+        .eye-iris-new {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(34, 211, 238, 0.8) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(129, 140, 248, 0.6) 0%, transparent 40%),
+                radial-gradient(circle, #0d4f5a 0%, #0a3d47 40%, #062a33 70%, #041920 100%);
+            opacity: 0;
+            animation: iris-appear 1s ease-out 2.2s forwards, iris-pulse 4s ease-in-out infinite 3.2s;
+            box-shadow: 
+                0 0 40px rgba(34, 211, 238, 0.3),
+                inset 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes iris-appear {
+            from { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0);
+            }
+            to { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes iris-pulse {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1);
+                box-shadow: 0 0 40px rgba(34, 211, 238, 0.3), inset 0 0 30px rgba(0, 0, 0, 0.5);
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.05);
+                box-shadow: 0 0 60px rgba(34, 211, 238, 0.5), inset 0 0 30px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* Iris texture lines */
+        .iris-lines {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            opacity: 0;
+            animation: iris-appear 1s ease-out 2.4s forwards;
+        }
+
+        .iris-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 1px;
+            height: 50px;
+            background: linear-gradient(to bottom, transparent, rgba(34, 211, 238, 0.3), transparent);
+            transform-origin: top center;
+        }
+
+        /* Pupil */
+        .eye-pupil-new {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at 30% 30%, #1a1a2e 0%, #000 100%);
+            border-radius: 50%;
+            opacity: 0;
+            animation: pupil-appear 0.6s ease-out 2.5s forwards, pupil-dilate 5s ease-in-out infinite 3.1s;
+            box-shadow: 
+                0 0 20px rgba(0, 0, 0, 0.8),
+                inset 0 0 15px rgba(129, 140, 248, 0.2);
+        }
+
+        @keyframes pupil-appear {
+            from { 
+                opacity: 0; 
+                transform: translate(-50%, -50%) scale(0);
+            }
+            to { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes pupil-dilate {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            30% { transform: translate(-50%, -50%) scale(0.85); }
+            60% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        /* Pupil reflection */
+        .pupil-reflection {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+        }
+
+        .pupil-reflection-2 {
+            top: 18px;
+            left: 20px;
+            width: 6px;
+            height: 6px;
+        }
+
+        /* Scanning line effect */
+        .scan-line {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 280px;
-            height: 280px;
-            border: 3px solid rgba(129, 140, 248, 0.3);
-            border-radius: 50%;
-            animation: rotate 20s linear infinite;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-tertiary), transparent);
+            opacity: 0;
+            animation: scan 3s ease-in-out infinite 3.5s;
         }
 
-        .eye-outer::before {
-            content: '';
+        @keyframes scan {
+            0%, 100% { 
+                opacity: 0;
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            10%, 90% {
+                opacity: 0.6;
+            }
+            50% { 
+                opacity: 0.6;
+                transform: translate(-50%, -50%) rotate(180deg);
+            }
+        }
+
+        /* Data points floating around */
+        .data-particle {
             position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 16px;
-            height: 16px;
+            width: 4px;
+            height: 4px;
             background: var(--accent-primary);
             border-radius: 50%;
-            box-shadow: 0 0 20px var(--accent-primary);
+            opacity: 0;
+            animation: particle-orbit 8s linear infinite;
         }
 
-        .eye-middle {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 200px;
-            height: 200px;
-            border: 2px solid rgba(192, 132, 252, 0.4);
-            border-radius: 50%;
-            animation: rotate 15s linear infinite reverse;
+        .data-particle:nth-child(1) { animation-delay: 0s; top: 50%; left: 0; }
+        .data-particle:nth-child(2) { animation-delay: 1s; top: 20%; left: 20%; }
+        .data-particle:nth-child(3) { animation-delay: 2s; top: 80%; left: 30%; }
+        .data-particle:nth-child(4) { animation-delay: 3s; top: 30%; right: 10%; }
+        .data-particle:nth-child(5) { animation-delay: 4s; bottom: 20%; right: 20%; }
+        .data-particle:nth-child(6) { animation-delay: 5s; top: 10%; left: 50%; }
+
+        @keyframes particle-orbit {
+            0% { 
+                opacity: 0;
+                transform: translate(0, 0) scale(0);
+            }
+            10% {
+                opacity: 0.8;
+                transform: translate(20px, -20px) scale(1);
+            }
+            50% {
+                opacity: 0.4;
+                transform: translate(100px, 50px) scale(0.5);
+            }
+            90% {
+                opacity: 0.8;
+                transform: translate(180px, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(200px, 20px) scale(0);
+            }
         }
 
-        .eye-middle::before {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 12px;
-            height: 12px;
-            background: var(--accent-secondary);
-            border-radius: 50%;
-            box-shadow: 0 0 15px var(--accent-secondary);
-        }
-
-        .eye-iris {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 120px;
-            height: 120px;
-            background: radial-gradient(circle, var(--accent-tertiary) 0%, rgba(34, 211, 238, 0.3) 50%, transparent 70%);
-            border-radius: 50%;
-            animation: pulse-iris 3s ease-in-out infinite;
-        }
-
-        .eye-pupil {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle, #000 0%, #1a1a2e 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(129, 140, 248, 0.3);
-        }
-
-        .eye-pupil::after {
-            content: '';
-            position: absolute;
-            top: 8px;
-            left: 12px;
-            width: 12px;
-            height: 12px;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-        }
-
-        /* Neural Network Lines */
-        .neural-lines {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .neural-node {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: var(--accent-primary);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--accent-primary);
-            animation: node-pulse 2s ease-in-out infinite;
-        }
-
-        .neural-node:nth-child(1) { top: 10%; left: 20%; animation-delay: 0s; }
-        .neural-node:nth-child(2) { top: 25%; left: 5%; animation-delay: 0.3s; }
-        .neural-node:nth-child(3) { top: 50%; left: 0%; animation-delay: 0.6s; }
-        .neural-node:nth-child(4) { top: 75%; left: 5%; animation-delay: 0.9s; }
-        .neural-node:nth-child(5) { top: 90%; left: 20%; animation-delay: 1.2s; }
-        .neural-node:nth-child(6) { top: 10%; right: 20%; animation-delay: 0.2s; }
-        .neural-node:nth-child(7) { top: 25%; right: 5%; animation-delay: 0.5s; }
-        .neural-node:nth-child(8) { top: 50%; right: 0%; animation-delay: 0.8s; }
-        .neural-node:nth-child(9) { top: 75%; right: 5%; animation-delay: 1.1s; }
-        .neural-node:nth-child(10) { top: 90%; right: 20%; animation-delay: 1.4s; }
-        .neural-node:nth-child(11) { top: 0%; left: 50%; animation-delay: 0.4s; }
-        .neural-node:nth-child(12) { bottom: 0%; left: 50%; animation-delay: 0.7s; }
-
-        @keyframes rotate {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        @keyframes pulse-iris {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
-        }
-
-        @keyframes node-pulse {
-            0%, 100% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.5); opacity: 1; }
-        }
-
-        /* Connecting Lines SVG */
-        .neural-svg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .neural-svg line {
-            stroke: url(#neural-gradient);
-            stroke-width: 1;
-            opacity: 0.3;
+        /* Click to animate */
+        .neural-eye-wrapper {
+            cursor: pointer;
         }
 
         /* Upload Section */
@@ -1149,6 +1321,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .feature-card {
@@ -1156,10 +1330,11 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             backdrop-filter: blur(40px);
             border: 1px solid var(--border-subtle);
             border-radius: 20px;
-            padding: 36px;
+            padding: 32px;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            max-width: 400px;
         }
 
         .feature-card::before {
@@ -1215,6 +1390,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
         .tech-card {
@@ -1222,7 +1399,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             backdrop-filter: blur(40px);
             border: 1px solid var(--border-subtle);
             border-radius: 20px;
-            padding: 36px;
+            padding: 32px;
             position: relative;
             transition: all 0.3s ease;
         }
@@ -1233,15 +1410,20 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
         .tech-card.large {
             grid-column: span 2;
+            max-width: 100%;
         }
 
         .tech-card.full-width {
             grid-column: span 2;
+            max-width: 100%;
         }
 
         .tech-card.highlight {
             background: linear-gradient(135deg, rgba(129, 140, 248, 0.1), rgba(192, 132, 252, 0.05));
             border-color: var(--border-glow);
+            grid-column: span 2;
+            max-width: 500px;
+            justify-self: center;
         }
 
         .tech-number {
@@ -1330,9 +1512,12 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         /* Research Section */
         .research-content {
             display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 24px;
             margin-bottom: 60px;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .research-card {
@@ -1340,24 +1525,25 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             backdrop-filter: blur(40px);
             border: 1px solid var(--border-subtle);
             border-radius: 20px;
-            padding: 36px;
+            padding: 28px;
         }
 
         .research-card.main {
-            grid-row: span 2;
+            grid-row: span 1;
         }
 
         .research-card h3 {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             font-weight: 600;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             color: var(--text-primary);
         }
 
         .research-card p {
             color: var(--text-secondary);
             line-height: 1.7;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
+            font-size: 0.9rem;
         }
 
         .research-card p:last-child {
@@ -1367,14 +1553,16 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         .research-list {
             list-style: none;
             padding: 0;
+            margin-top: 12px;
         }
 
         .research-list li {
             position: relative;
-            padding-left: 24px;
-            margin-bottom: 12px;
+            padding-left: 20px;
+            margin-bottom: 8px;
             color: var(--text-secondary);
-            line-height: 1.6;
+            line-height: 1.5;
+            font-size: 0.85rem;
         }
 
         .research-list li::before {
@@ -1382,27 +1570,34 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             position: absolute;
             left: 0;
             color: var(--accent-primary);
+            font-size: 0.8rem;
+        }
+
+        .datasets-section {
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .datasets-section h3 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 600;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
             text-align: center;
         }
 
         .dataset-cards {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
+            gap: 20px;
         }
 
         .dataset-card {
             background: var(--bg-card);
             backdrop-filter: blur(40px);
             border: 1px solid var(--border-subtle);
-            border-radius: 20px;
-            padding: 32px;
+            border-radius: 16px;
+            padding: 24px;
             transition: all 0.3s ease;
         }
 
@@ -1412,27 +1607,27 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         }
 
         .dataset-icon {
-            font-size: 2rem;
-            margin-bottom: 16px;
+            font-size: 1.5rem;
+            margin-bottom: 12px;
         }
 
         .dataset-card h4 {
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: var(--text-primary);
         }
 
         .dataset-authors {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
-            margin-bottom: 12px !important;
+            margin-bottom: 10px !important;
         }
 
         .dataset-desc {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
-            margin-bottom: 16px !important;
+            margin-bottom: 12px !important;
         }
 
         .dataset-link {
@@ -1441,7 +1636,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             color: var(--accent-primary);
             text-decoration: none;
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             transition: color 0.3s;
         }
 
@@ -1514,8 +1709,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         .about-stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 24px;
-            max-width: 900px;
+            gap: 20px;
+            max-width: 800px;
             margin: 0 auto;
         }
 
@@ -1523,24 +1718,24 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             background: var(--bg-card);
             backdrop-filter: blur(40px);
             border: 1px solid var(--border-subtle);
-            border-radius: 20px;
-            padding: 32px 24px;
+            border-radius: 16px;
+            padding: 24px 16px;
             text-align: center;
         }
 
         .about-stat-value {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
             font-family: 'JetBrains Mono', monospace;
             background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .about-stat-label {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
         }
 
@@ -1658,10 +1853,15 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
             .research-content {
                 grid-template-columns: 1fr;
+                max-width: 600px;
             }
 
             .research-card.main {
                 grid-row: span 1;
+            }
+            
+            .datasets-section {
+                max-width: 100%;
             }
 
             .about-stats {
@@ -1785,6 +1985,72 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         section[id] {
             scroll-margin-top: 100px;
         }
+
+        /* Scroll Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-60px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal-left.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(60px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal-right.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal-scale.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Staggered delays for grid items */
+        .reveal-stagger > *:nth-child(1) { transition-delay: 0s; }
+        .reveal-stagger > *:nth-child(2) { transition-delay: 0.1s; }
+        .reveal-stagger > *:nth-child(3) { transition-delay: 0.2s; }
+        .reveal-stagger > *:nth-child(4) { transition-delay: 0.3s; }
+        .reveal-stagger > *:nth-child(5) { transition-delay: 0.4s; }
+        .reveal-stagger > *:nth-child(6) { transition-delay: 0.5s; }
+        .reveal-stagger > *:nth-child(7) { transition-delay: 0.6s; }
+        .reveal-stagger > *:nth-child(8) { transition-delay: 0.7s; }
+
+        .reveal-stagger > * {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.6s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal-stagger.active > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -1833,60 +2099,56 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                 </div>
             </div>
 
-            <div class="neural-eye-container fade-in stagger-2">
-                <div class="neural-eye">
-                    <svg class="neural-svg" viewBox="0 0 400 400">
-                        <defs>
-                            <linearGradient id="neural-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#818cf8;stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:#c084fc;stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                        <!-- Neural connection lines -->
-                        <line x1="80" y1="40" x2="200" y2="200" />
-                        <line x1="20" y1="100" x2="200" y2="200" />
-                        <line x1="0" y1="200" x2="200" y2="200" />
-                        <line x1="20" y1="300" x2="200" y2="200" />
-                        <line x1="80" y1="360" x2="200" y2="200" />
-                        <line x1="320" y1="40" x2="200" y2="200" />
-                        <line x1="380" y1="100" x2="200" y2="200" />
-                        <line x1="400" y1="200" x2="200" y2="200" />
-                        <line x1="380" y1="300" x2="200" y2="200" />
-                        <line x1="320" y1="360" x2="200" y2="200" />
-                        <line x1="200" y1="0" x2="200" y2="200" />
-                        <line x1="200" y1="400" x2="200" y2="200" />
-                    </svg>
-                    <div class="neural-lines">
-                        <div class="neural-node"></div>
-                        <div class="neural-node"></div>
-                        <div class="neural-node"></div>
-                        <div class="neural-node"></div>
-                        <div class="neural-node"></div>
-                        <div class="neural-node"></div>
-                        <div class="neural-node"></div>
-                        <div class="neural-node"></div>
-                        <div class="neural-node"></div>
-                        <div class="neural-node"></div>
-                        <div class="neural-node"></div>
-                        <div class="neural-node"></div>
+            <div class="neural-eye-container">
+                <div class="neural-eye-wrapper" id="neuralEyeWrapper" title="Click to replay animation">
+                    <!-- Neural network canvas animation -->
+                    <canvas id="neuralCanvas" width="450" height="450"></canvas>
+                    
+                    <!-- Eye structure that fades in -->
+                    <div class="eye-structure" id="eyeStructure">
+                        <!-- Rotating rings -->
+                        <div class="eye-ring eye-ring-1"><div class="ring-dot"></div></div>
+                        <div class="eye-ring eye-ring-2"><div class="ring-dot"></div></div>
+                        <div class="eye-ring eye-ring-3"><div class="ring-dot"></div></div>
+                        
+                        <!-- Iris -->
+                        <div class="eye-iris-new">
+                            <div class="iris-lines">
+                                <!-- Generated by JS -->
+                            </div>
+                        </div>
+                        
+                        <!-- Pupil -->
+                        <div class="eye-pupil-new">
+                            <div class="pupil-reflection"></div>
+                            <div class="pupil-reflection pupil-reflection-2"></div>
+                        </div>
+                        
+                        <!-- Scanning effect -->
+                        <div class="scan-line"></div>
+                        
+                        <!-- Data particles -->
+                        <div class="data-particle"></div>
+                        <div class="data-particle"></div>
+                        <div class="data-particle"></div>
+                        <div class="data-particle"></div>
+                        <div class="data-particle"></div>
+                        <div class="data-particle"></div>
                     </div>
-                    <div class="eye-outer"></div>
-                    <div class="eye-middle"></div>
-                    <div class="eye-iris"></div>
-                    <div class="eye-pupil"></div>
+                    
                 </div>
             </div>
         </section>
 
         <!-- Upload Section -->
         <section class="upload-section" id="analyze">
-            <div class="section-header fade-in-up">
+            <div class="section-header reveal">
                 <span class="section-tag">Begin Screening</span>
                 <h2>Upload Eye Tracking Video</h2>
                 <p>Watch dots on a screen, and our AI analyzes your eye movements in real-time—extracting saccade patterns, fixation stability, and pupil dynamics to screen for ADHD indicators.</p>
             </div>
 
-            <div class="upload-card fade-in-up stagger-1" id="uploadCard">
+            <div class="upload-card reveal-scale" id="uploadCard">
                 <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
                     <div class="upload-icon-wrapper">📹</div>
                     <h3 class="upload-title">Drag & drop your video here</h3>
@@ -1920,7 +2182,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
         <!-- Results Section -->
         <section class="results-section hidden" id="resultsSection">
-            <div class="section-header fade-in-up">
+            <div class="section-header reveal">
                 <span class="section-tag">Analysis Complete</span>
                 <h2>Diagnostic Results</h2>
                 <p>Comprehensive neural analysis of eye movement patterns and attention biomarkers.</p>
@@ -1928,7 +2190,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
             <!-- Main Results Grid -->
             <div class="results-grid">
-                <div class="result-card main-result fade-in-up">
+                <div class="result-card main-result reveal-left">
                     <h3>Diagnosis</h3>
                     <div class="diagnosis-badge" id="diagnosisBadge">--</div>
                     <div class="probability-display">
@@ -1942,7 +2204,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     </div>
                 </div>
 
-                <div class="result-card metrics-card fade-in-up stagger-1">
+                <div class="result-card metrics-card reveal-right">
                     <h3>Key Biomarkers</h3>
                     <div class="metrics-grid">
                         <div class="metric-box">
@@ -1980,26 +2242,26 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             </div>
 
             <!-- Charts Grid -->
-            <div class="charts-grid">
-                <div class="chart-card fade-in-up">
+            <div class="charts-grid reveal-stagger">
+                <div class="chart-card">
                     <h3>Gaze Trajectory Analysis</h3>
                     <div class="chart-container">
                         <canvas id="gazeChart"></canvas>
                     </div>
                 </div>
-                <div class="chart-card fade-in-up stagger-1">
+                <div class="chart-card">
                     <h3>Pupil Diameter Dynamics</h3>
                     <div class="chart-container">
                         <canvas id="pupilChart"></canvas>
                     </div>
                 </div>
-                <div class="chart-card fade-in-up stagger-2">
+                <div class="chart-card">
                     <h3>Saccade Velocity Profile</h3>
                     <div class="chart-container">
                         <canvas id="velocityChart"></canvas>
                     </div>
                 </div>
-                <div class="chart-card fade-in-up stagger-3">
+                <div class="chart-card">
                     <h3>Attention Distribution Radar</h3>
                     <div class="chart-container">
                         <canvas id="radarChart"></canvas>
@@ -2008,7 +2270,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             </div>
 
             <!-- Insights Grid -->
-            <div class="insights-card fade-in-up">
+            <div class="insights-card reveal">
                 <h3>Clinical Insights</h3>
                 <div class="insights-grid" id="insightsGrid">
                     <!-- Populated by JS -->
@@ -2016,7 +2278,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
             </div>
 
             <!-- Clinical Table -->
-            <div class="clinical-card fade-in-up">
+            <div class="clinical-card reveal">
                 <h3>Detailed Biomarker Analysis</h3>
                 <table class="clinical-table">
                     <thead>
@@ -2037,39 +2299,39 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
         <!-- Features Section -->
         <section class="content-section" id="features">
-            <div class="section-header fade-in-up">
+            <div class="section-header reveal">
                 <span class="section-tag">Capabilities</span>
                 <h2>Features</h2>
                 <p>Revolutionary screening technology that makes ADHD detection accessible, fast, and non-invasive.</p>
             </div>
 
-            <div class="features-grid">
-                <div class="feature-card fade-in-up">
+            <div class="features-grid reveal-stagger">
+                <div class="feature-card">
                     <div class="feature-icon">🔬</div>
                     <h3>Non-Invasive Screening</h3>
                     <p>No blood tests, no brain scans. Simply watch dots on a screen while our system analyzes your eye movements in real-time.</p>
                 </div>
-                <div class="feature-card fade-in-up stagger-1">
+                <div class="feature-card">
                     <div class="feature-icon">⚡</div>
                     <h3>Rapid Results</h3>
                     <p>Complete the screening in under 5 minutes. Our AI processes thousands of data points to deliver insights immediately.</p>
                 </div>
-                <div class="feature-card fade-in-up stagger-2">
+                <div class="feature-card">
                     <div class="feature-icon">📦</div>
                     <h3>Portable Hardware</h3>
                     <p>Our compact Raspberry Pi-based device can be deployed anywhere—classrooms, pediatric offices, or at home.</p>
                 </div>
-                <div class="feature-card fade-in-up stagger-3">
+                <div class="feature-card">
                     <div class="feature-icon">🧠</div>
                     <h3>Research-Backed Detection</h3>
                     <p>Trained on extensive eye-tracking datasets, our model identifies the subtle gaze patterns that distinguish ADHD from neurotypical attention.</p>
                 </div>
-                <div class="feature-card fade-in-up stagger-4">
+                <div class="feature-card">
                     <div class="feature-icon">👁</div>
                     <h3>Real-Time Visualization</h3>
                     <p>Watch your gaze patterns in our Eye Tracking Preview interface. See exactly what the AI sees as it analyzes your eye movements.</p>
                 </div>
-                <div class="feature-card fade-in-up">
+                <div class="feature-card">
                     <div class="feature-icon">🔒</div>
                     <h3>Privacy-First Design</h3>
                     <p>All processing happens locally on the device. Your eye data never leaves the hardware.</p>
@@ -2079,14 +2341,14 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
         <!-- Technology Section -->
         <section class="content-section" id="technology">
-            <div class="section-header fade-in-up">
+            <div class="section-header reveal">
                 <span class="section-tag">Under the Hood</span>
                 <h2>Technology</h2>
                 <p>State-of-the-art AI architecture powering clinical-grade eye tracking analysis.</p>
             </div>
 
             <div class="tech-grid">
-                <div class="tech-card large fade-in-up">
+                <div class="tech-card large reveal">
                     <div class="tech-number">01</div>
                     <h3>Computer Vision Pipeline</h3>
                     <p>Our custom-built camera system captures eye movements at high frequency. Advanced pupil detection algorithms extract gaze coordinates, pupil dilation, and fixation stability—all in real-time.</p>
@@ -2103,19 +2365,19 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     </div>
                 </div>
 
-                <div class="tech-card fade-in-up stagger-1">
+                <div class="tech-card reveal-left">
                     <div class="tech-number">02</div>
                     <h3>Transformer Neural Network</h3>
                     <p>At the heart of EXCITE is a state-of-the-art Transformer encoder, the same architecture powering modern AI breakthroughs. Our model learns temporal patterns in gaze sequences that traditional methods miss.</p>
                 </div>
 
-                <div class="tech-card fade-in-up stagger-2">
+                <div class="tech-card reveal-right">
                     <div class="tech-number">03</div>
                     <h3>Two-Stage Training</h3>
                     <p>We first pre-train on large-scale eye-tracking data (GazeBase: 12,000+ recordings) to learn general gaze dynamics. Then we fine-tune on ADHD-specific datasets to specialize in attention disorder detection.</p>
                 </div>
 
-                <div class="tech-card full-width fade-in-up">
+                <div class="tech-card full-width reveal">
                     <div class="tech-number">04</div>
                     <h3>ADHD-Relevant Biomarkers</h3>
                     <p>Our system extracts clinically meaningful features that correlate with attention disorders:</p>
@@ -2147,7 +2409,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     </div>
                 </div>
 
-                <div class="tech-card highlight fade-in-up">
+                <div class="tech-card highlight reveal-scale">
                     <div class="tech-number">05</div>
                     <h3>Edge Deployment</h3>
                     <p>Optimized to run on Raspberry Pi hardware, bringing lab-grade eye-tracking analysis to a <strong>$50 device</strong>.</p>
@@ -2160,36 +2422,38 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
         <!-- Research Section -->
         <section class="content-section" id="research">
-            <div class="section-header fade-in-up">
+            <div class="section-header reveal">
                 <span class="section-tag">Scientific Foundation</span>
                 <h2>Research</h2>
                 <p>Built on peer-reviewed science and validated against clinical diagnoses.</p>
             </div>
 
-            <div class="research-content">
-                <div class="research-card main fade-in-up">
+            <div class="research-content reveal-stagger">
+                <div class="research-card">
                     <h3>The Science of Gaze</h3>
-                    <p>Eye movements are controlled by the same neural circuits involved in attention and executive function—the core deficits in ADHD. Research shows that individuals with ADHD exhibit distinct patterns:</p>
+                    <p>Eye movements are controlled by the same neural circuits involved in attention and executive function—the core deficits in ADHD.</p>
                     <ul class="research-list">
-                        <li>More frequent saccades during sustained attention tasks</li>
-                        <li>Reduced fixation stability and increased drift</li>
-                        <li>Altered pupil responses to cognitive load</li>
-                        <li>Different temporal patterns in gaze sequences</li>
+                        <li>More frequent saccades during attention tasks</li>
+                        <li>Reduced fixation stability</li>
+                        <li>Altered pupil responses</li>
+                        <li>Different temporal gaze patterns</li>
                     </ul>
                 </div>
 
-                <div class="research-card fade-in-up stagger-1">
+                <div class="research-card">
                     <h3>Our Approach</h3>
-                    <p>EXCITE leverages transfer learning from the GazeBase dataset, one of the largest eye-tracking repositories with recordings from <strong>322 participants</strong> across multiple sessions. By pre-training on this data, our model learns robust representations of eye movement dynamics before specializing on ADHD detection.</p>
+                    <p>EXCITE leverages transfer learning from the GazeBase dataset—one of the largest eye-tracking repositories with <strong>322 participants</strong> across multiple sessions.</p>
+                    <p>Our model learns robust representations of eye movement dynamics before specializing on ADHD detection.</p>
                 </div>
 
-                <div class="research-card fade-in-up stagger-2">
+                <div class="research-card">
                     <h3>Validation</h3>
-                    <p>Our model is validated against clinical ADHD diagnoses, with ongoing studies to establish sensitivity and specificity benchmarks. EXCITE is a screening tool designed to <strong>complement—not replace</strong>—professional clinical evaluation.</p>
+                    <p>Our model is validated against clinical ADHD diagnoses, with ongoing studies to establish sensitivity and specificity benchmarks.</p>
+                    <p>EXCITE is designed to <strong>complement—not replace</strong>—professional clinical evaluation.</p>
                 </div>
             </div>
 
-            <div class="datasets-section fade-in-up">
+            <div class="datasets-section reveal">
                 <h3>Datasets</h3>
                 <div class="dataset-cards">
                     <div class="dataset-card">
@@ -2216,12 +2480,12 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
         <!-- About Section -->
         <section class="content-section" id="about">
-            <div class="section-header fade-in-up">
+            <div class="section-header reveal">
                 <span class="section-tag">Our Mission</span>
                 <h2>About EXCITE</h2>
             </div>
 
-            <div class="about-content fade-in-up">
+            <div class="about-content reveal">
                 <div class="about-main">
                     <div class="about-logo-large">
                         <div class="about-eye-icon">👁</div>
@@ -2286,6 +2550,298 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     </footer>
 
     <script>
+        // ============================================
+        // NEURAL NETWORK TO EYE TRANSFORMATION
+        // ============================================
+        
+        class NeuralNetworkAnimation {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.width = canvas.width;
+                this.height = canvas.height;
+                this.centerX = this.width / 2;
+                this.centerY = this.height / 2;
+                
+                // Neural network nodes
+                this.nodes = [];
+                this.connections = [];
+                this.particles = [];
+                
+                // Animation state
+                this.phase = 0; // 0: network forming, 1: converging, 2: eye formed
+                this.startTime = Date.now();
+                this.transitionStart = null;
+                
+                this.init();
+                this.animate();
+            }
+            
+            init() {
+                // Create neural network layers
+                const layers = [
+                    { count: 6, radius: 200 },  // Outer layer
+                    { count: 8, radius: 150 },  // Middle layer
+                    { count: 6, radius: 100 },  // Inner layer
+                    { count: 4, radius: 50 },   // Core layer
+                ];
+                
+                layers.forEach((layer, layerIndex) => {
+                    for (let i = 0; i < layer.count; i++) {
+                        const angle = (i / layer.count) * Math.PI * 2 - Math.PI / 2;
+                        const node = {
+                            x: this.centerX + Math.cos(angle) * layer.radius,
+                            y: this.centerY + Math.sin(angle) * layer.radius,
+                            targetX: this.centerX + Math.cos(angle) * layer.radius,
+                            targetY: this.centerY + Math.sin(angle) * layer.radius,
+                            originalX: this.centerX + Math.cos(angle) * layer.radius,
+                            originalY: this.centerY + Math.sin(angle) * layer.radius,
+                            radius: 4 - layerIndex * 0.5,
+                            layer: layerIndex,
+                            angle: angle,
+                            baseAngle: angle,
+                            pulseOffset: Math.random() * Math.PI * 2,
+                            orbitSpeed: (0.2 + Math.random() * 0.3) * (layerIndex % 2 === 0 ? 1 : -1),
+                            converged: false
+                        };
+                        this.nodes.push(node);
+                    }
+                });
+                
+                // Create connections between nodes
+                this.nodes.forEach((node, i) => {
+                    this.nodes.forEach((other, j) => {
+                        if (i !== j) {
+                            const dist = Math.hypot(node.originalX - other.originalX, node.originalY - other.originalY);
+                            if (dist < 120 && Math.random() > 0.3) {
+                                this.connections.push({
+                                    from: i,
+                                    to: j,
+                                    opacity: 0.1 + Math.random() * 0.2,
+                                    pulseOffset: Math.random() * Math.PI * 2
+                                });
+                            }
+                        }
+                    });
+                });
+            }
+            
+            createParticle(fromNode, toNode) {
+                this.particles.push({
+                    x: fromNode.x,
+                    y: fromNode.y,
+                    targetX: toNode.x,
+                    targetY: toNode.y,
+                    progress: 0,
+                    speed: 0.02 + Math.random() * 0.02
+                });
+            }
+            
+            update() {
+                const elapsed = (Date.now() - this.startTime) / 1000;
+                
+                // Phase transitions
+                if (elapsed > 1.5 && this.phase === 0) {
+                    this.phase = 1;
+                    this.transitionStart = Date.now();
+                }
+                if (elapsed > 3 && this.phase === 1) {
+                    this.phase = 2;
+                }
+                
+                // Update nodes
+                this.nodes.forEach(node => {
+                    if (this.phase === 0) {
+                        // Orbiting phase
+                        node.angle = node.baseAngle + elapsed * node.orbitSpeed;
+                        const layerRadius = [200, 150, 100, 50][node.layer];
+                        node.x = this.centerX + Math.cos(node.angle) * layerRadius;
+                        node.y = this.centerY + Math.sin(node.angle) * layerRadius;
+                    } else if (this.phase === 1) {
+                        // Converging phase
+                        const transitionElapsed = (Date.now() - this.transitionStart) / 1000;
+                        const progress = Math.min(1, transitionElapsed / 1.5);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        
+                        // Converge toward center in a spiral
+                        const targetRadius = node.layer * 15 + 20;
+                        const spiralAngle = node.baseAngle + progress * Math.PI * 2;
+                        node.targetX = this.centerX + Math.cos(spiralAngle) * targetRadius * (1 - eased * 0.8);
+                        node.targetY = this.centerY + Math.sin(spiralAngle) * targetRadius * (1 - eased * 0.8);
+                        
+                        node.x += (node.targetX - node.x) * 0.1;
+                        node.y += (node.targetY - node.y) * 0.1;
+                    } else {
+                        // Final state - subtle orbit around center
+                        const finalRadius = 30 + node.layer * 10;
+                        node.angle += 0.01 * (node.layer % 2 === 0 ? 1 : -1);
+                        node.targetX = this.centerX + Math.cos(node.angle) * finalRadius;
+                        node.targetY = this.centerY + Math.sin(node.angle) * finalRadius;
+                        node.x += (node.targetX - node.x) * 0.05;
+                        node.y += (node.targetY - node.y) * 0.05;
+                    }
+                });
+                
+                // Update particles
+                this.particles = this.particles.filter(p => {
+                    p.progress += p.speed;
+                    p.x = p.x + (p.targetX - p.x) * p.progress;
+                    p.y = p.y + (p.targetY - p.y) * p.progress;
+                    return p.progress < 1;
+                });
+                
+                // Spawn new particles occasionally
+                if (Math.random() < 0.1 && this.nodes.length > 1) {
+                    const fromIdx = Math.floor(Math.random() * this.nodes.length);
+                    const toIdx = Math.floor(Math.random() * this.nodes.length);
+                    if (fromIdx !== toIdx) {
+                        this.createParticle(this.nodes[fromIdx], this.nodes[toIdx]);
+                    }
+                }
+            }
+            
+            draw() {
+                this.ctx.clearRect(0, 0, this.width, this.height);
+                const elapsed = (Date.now() - this.startTime) / 1000;
+                
+                // Fade out effect for phase 2
+                const fadeOut = this.phase === 2 ? Math.max(0, 1 - (elapsed - 3) / 2) : 1;
+                
+                // Draw connections
+                this.connections.forEach(conn => {
+                    const from = this.nodes[conn.from];
+                    const to = this.nodes[conn.to];
+                    const pulse = Math.sin(elapsed * 3 + conn.pulseOffset) * 0.5 + 0.5;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(from.x, from.y);
+                    this.ctx.lineTo(to.x, to.y);
+                    
+                    const gradient = this.ctx.createLinearGradient(from.x, from.y, to.x, to.y);
+                    gradient.addColorStop(0, `rgba(129, 140, 248, ${conn.opacity * pulse * fadeOut})`);
+                    gradient.addColorStop(1, `rgba(192, 132, 252, ${conn.opacity * pulse * fadeOut})`);
+                    
+                    this.ctx.strokeStyle = gradient;
+                    this.ctx.lineWidth = 1;
+                    this.ctx.stroke();
+                });
+                
+                // Draw particles
+                this.particles.forEach(p => {
+                    const alpha = (1 - p.progress) * fadeOut;
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                    this.ctx.fillStyle = `rgba(34, 211, 238, ${alpha})`;
+                    this.ctx.fill();
+                });
+                
+                // Draw nodes
+                this.nodes.forEach(node => {
+                    const pulse = Math.sin(elapsed * 2 + node.pulseOffset) * 0.3 + 0.7;
+                    const colors = ['#818cf8', '#c084fc', '#22d3ee', '#34d399'];
+                    const color = colors[node.layer];
+                    
+                    // Glow
+                    this.ctx.beginPath();
+                    this.ctx.arc(node.x, node.y, node.radius * 3, 0, Math.PI * 2);
+                    const glowGradient = this.ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, node.radius * 3);
+                    glowGradient.addColorStop(0, color.replace(')', `, ${0.3 * pulse * fadeOut})`).replace('rgb', 'rgba'));
+                    glowGradient.addColorStop(1, 'transparent');
+                    this.ctx.fillStyle = glowGradient;
+                    this.ctx.fill();
+                    
+                    // Node
+                    this.ctx.beginPath();
+                    this.ctx.arc(node.x, node.y, node.radius * pulse, 0, Math.PI * 2);
+                    this.ctx.fillStyle = color.replace(')', `, ${fadeOut})`).replace('#', 'rgba(').replace(/([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i, (m, r, g, b) => `${parseInt(r,16)}, ${parseInt(g,16)}, ${parseInt(b,16)}`);
+                    this.ctx.fillStyle = `rgba(129, 140, 248, ${fadeOut})`;
+                    this.ctx.fill();
+                });
+            }
+            
+            animate() {
+                this.update();
+                this.draw();
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+        
+        // Neural animation instance
+        let neuralAnimation = null;
+        
+        // Initialize neural network animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('neuralCanvas');
+            const wrapper = document.getElementById('neuralEyeWrapper');
+            const eyeStructure = document.getElementById('eyeStructure');
+            
+            if (canvas) {
+                neuralAnimation = new NeuralNetworkAnimation(canvas);
+            }
+            
+            // Generate iris lines
+            const irisLines = document.querySelector('.iris-lines');
+            if (irisLines) {
+                for (let i = 0; i < 24; i++) {
+                    const line = document.createElement('div');
+                    line.className = 'iris-line';
+                    line.style.transform = `rotate(${i * 15}deg)`;
+                    irisLines.appendChild(line);
+                }
+            }
+            
+            // Click to replay animation
+            if (wrapper) {
+                wrapper.addEventListener('click', () => {
+                    // Reset eye structure animations
+                    if (eyeStructure) {
+                        eyeStructure.style.animation = 'none';
+                        eyeStructure.offsetHeight; // Trigger reflow
+                        eyeStructure.style.animation = '';
+                        
+                        // Reset all child animations
+                        const animatedElements = eyeStructure.querySelectorAll('[class*="eye-"], .scan-line, .data-particle');
+                        animatedElements.forEach(el => {
+                            el.style.animation = 'none';
+                            el.offsetHeight;
+                            el.style.animation = '';
+                        });
+                    }
+                    
+                    // Restart neural network animation
+                    if (canvas) {
+                        neuralAnimation = new NeuralNetworkAnimation(canvas);
+                    }
+                });
+            }
+        });
+        
+        // ============================================
+        // SCROLL REVEAL ANIMATIONS
+        // ============================================
+        
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+        
+        // Observe all reveal elements when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-stagger').forEach(el => {
+                revealObserver.observe(el);
+            });
+        });
+
+        // ============================================
+        // CHART INSTANCES & APP LOGIC
+        // ============================================
+        
         // Chart instances
         let gazeChart, pupilChart, velocityChart, radarChart;
 
