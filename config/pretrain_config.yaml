@@ -1,0 +1,32 @@
+# Pre-training configuration for GazeBase
+# Adjust based on your GPU memory
+
+data:
+  data_dir: "GazeBase_v2_0"
+  rounds: [1, 2, 3, 4, 5]      # Use more rounds for better pre-training
+  tasks: ["FXS", "RAN", "HSS"]  # Fixation, Random Saccade, Horizontal Saccade
+  seq_length: 1000              # 1 second at 1000Hz
+  stride: 500                   # 50% overlap
+  sampling_rate: 1000
+
+model:
+  input_dim: 5                  # x, y, velocity, acceleration, pupil
+  d_model: 128                  # Transformer hidden dim
+  n_heads: 4                    # Attention heads
+  n_layers: 4                   # Transformer layers
+  d_ff: 256                     # Feed-forward dim
+  dropout: 0.1
+  max_len: 2000
+
+training:
+  batch_size: 64                # Reduce if OOM
+  epochs: 100
+  lr: 0.0001
+  weight_decay: 0.00001
+  patience: 15                  # Early stopping patience
+  num_workers: 4
+
+# For smaller GPUs (8GB), use:
+# batch_size: 32
+# d_model: 64
+# n_layers: 3
